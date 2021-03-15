@@ -67,7 +67,7 @@
                     <serverName>DefaultApplicationServer</serverName>
                     <configFile>src/main/liberty/config/server.xml</configFile>
                     <appsDirectory>apps</appsDirectory>
-                    <looseApplication>false</looseApplication>
+                    <looseApplication>true</looseApplication>
                 </configuration>
             </plugin>
             <plugin>

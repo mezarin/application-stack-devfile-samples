@@ -30,20 +30,23 @@ commands:
   - id: build
     exec:  
       component: devruntime 
-      commandLine: earcount=$(ls -d *ear | wc -l) &&
-        if [ $earcount != 1 ]; then
-          echo "$earcount ear module dirs were found. One per component is expected." && exit -1;
+      commandLine:
+        earSuffixCount=$(find . -name *-ear -not -path "*/target/*" -not -path "*/wlp/*" | wc -l) &&
+        earDirCount=$(find . -name ear -not -path "*/target/*" -not -path "*/wlp/*" | wc -l) &&
+        if [[ $(($earSuffixCount + $earDirCount)) -ne 1 ]]; then
+          echo "An invalid number of ear module directories were found. One was expected." && exit -1;
         else
           echo "building and installing ear" && 
-          cd *ear && 
-          if [[ ! -d target/liberty/wlp ]]; then 
-            mkdir -p target/liberty && 
-            echo "...moving liberty"; mv /opt/ol/wlp target/liberty; touch ./.liberty-mv;
+          earDirPath=$(find . -name *-ear -not -path "*/target/*" -not -path "*/wlp/*") &&
+          [[ -z $earDirPath ]] && earDirPath=$(find . -name ear -not -path "*/target/*" -not -path "*/wlp/*");
+          if [[ ! -d target/liberty/wlp ]]; then
+            echo "...moving liberty" &&
+            cd $earDirPath &&  mkdir -p target/liberty && mv /opt/ol/wlp target/liberty; touch ./.liberty-mv && cd /projects;
           elif [[ -d /projects/target/liberty/wlp && ! -e /projects/.liberty-mv ]]; then 
             echo "STACK WARNING - LIBERTY RUNTIME WAS LOADED FROM HOST";
           fi  &&
-          mvn -B -f ../pom.xml -Dliberty.runtime.version=20.0.0.12  install -DskipITs &&
-          mvn -B -Dliberty.runtime.version=20.0.0.12  liberty:create liberty:install-feature liberty:deploy liberty:package -Dinclude=runnable;
+          mvn -B -Dliberty.runtime.version=20.0.0.12  install -DskipITs &&
+          mvn -B -f $earDirPath/pom.xml -Dliberty.runtime.version=20.0.0.12  liberty:create liberty:install-feature liberty:deploy liberty:package -Dinclude=runnable;
         fi
       workingDir: /projects
       hotReloadCapable: true
@@ -53,7 +56,10 @@ commands:
   - id: run
     exec:
       component: devruntime 
-      commandLine: rm -rf wlp; cd *ear; java -jar target/*.jar
+      commandLine: 
+        earDirPath=$(find . -name *-ear -not -path "*/target/*" -not -path "*/wlp/*") &&
+        [[ -z $earDirPath ]] && earDirPath=$(find . -name ear -not -path "*/target/*" -not -path "*/wlp/*");
+        rm -rf wlp; java -jar $earDirPath/target/*.jar
       workingDir: /projects
       hotReloadCapable: false
       group:
