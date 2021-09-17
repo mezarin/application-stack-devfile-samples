@@ -31,8 +31,8 @@ starterProjects:
       remotes:
         origin: "https://github.com/OpenLiberty/application-stack-starters.git"
 variables:
-  ol-version: "21.0.0.6"
-  ol-stack-image: "openliberty/application-stack:0.6"
+  - ol-version: "21.0.0.6"
+  - ol-stack-image: "openliberty/application-stack:0.6"
 components:
   - name: dev
     container:
