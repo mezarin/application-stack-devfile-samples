@@ -31,13 +31,13 @@ starterProjects:
       remotes:
         origin: "https://github.com/OpenLiberty/application-stack-starters.git"
 variables:
-  - ol-version: "21.0.0.6"
-  - ol-stack-image: "openliberty/application-stack:0.6"
+  ol-version: "21.0.0.6"
+  olstackimage: "openliberty/application-stack:0.6"
 components:
   - name: dev
     container:
       # In the original upstream of this devfile, the image used is openliberty/application-stack:<x.y.z>, which is built from the repository: https://github.com/OpenLiberty/application-stack
-      image: {{ol-stack-image}}
+      image: {{olstackimage}}
       memoryLimit: 1512Mi
       mountSources: true
       endpoints:
